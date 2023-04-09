@@ -48,7 +48,28 @@ socketIO.on('connection', (socket) => {
         socket.emit("registerError", "User already exists");
 
     });
+    socket.on("login", (data) => {
+        //👇🏻 Destructures the credentials from the object
+        const { username, password } = data;
 
+        //👇🏻 Filters the array for existing objects with the same email and password
+
+        let result = database.filter(
+            (user) => user.username === username && user.password === password
+        );
+        //👇🏻 If there is none, it returns this error message
+        if (result.length !== 1) {
+            return socket.emit("loginError", "Incorrect credentials");
+        }
+        //👇🏻 Returns the user's email & id if the user exists
+        socket.emit("loginSuccess", {
+            message: "Login successfully",
+            data: {
+                _id: result[0].id,
+                _email: result[0].email,
+            },
+        });
+    })
     socket.on('disconnect', () => {
       socket.disconnect()
       console.log('🔥: A user disconnected');
