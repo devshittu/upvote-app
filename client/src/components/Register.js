@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from 'prop-types';
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import {toast} from 'react-toastify'
 
 const Register = ({ socket }) => {
     const navigate = useNavigate();
@@ -12,11 +14,27 @@ const Register = ({ socket }) => {
         e.preventDefault();
         if (username.trim() && password.trim() && email.trim()) {
             console.log({ username, email, password });
+            //👇🏻 triggers a register event
+            socket.emit("register", { username, email, password });
             setPassword("");
             setUsername("");
             setEmail("");
         }
     };
+
+    //👇🏻 Add a useEffect hook that listens to both both events
+    useEffect(() => {
+        socket.on("registerSuccess", (data) => {
+            toast.success(data);
+            //👇🏻 navigates to the login page
+            navigate("/");
+        });
+        socket.on("registerError", (error) => {
+            toast.error(error);
+        });
+    }, [socket, navigate]);
+
+
     return (
         <div className='register'>
             <h2 style={{ marginBottom: "30px" }}>Register</h2>
@@ -65,5 +83,8 @@ const Register = ({ socket }) => {
         </div>
     );
 };
+Register.propTypes = {
+    socket: PropTypes.string
+}
 
 export default Register;
