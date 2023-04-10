@@ -11,16 +11,16 @@ const SharePhoto = ({ socket }) => {
   const { user } = useParams();
   useEffect(() => {
     function authenticateUser() {
-      const id = localStorage.getItem('_id');
-      /*
-        👇🏻 If ID is false, redirects the user to the login page
-        */
-      if (!id) {
-        navigate('/');
-      }
+        const id = localStorage.getItem('_id');
+        if (!id) {
+          navigate('/');
+        } else {
+          //👇🏻 user - is the username from the profile link
+          socket.emit('sharePhoto', user);
+        }
     }
     authenticateUser();
-  }, [navigate]);
+  }, [navigate, socket, user]);
   
   return (
     <div>
