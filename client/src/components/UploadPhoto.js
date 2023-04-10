@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const UploadPhoto = ({ socket }) => {
   const navigate = useNavigate();
@@ -29,14 +30,22 @@ const UploadPhoto = ({ socket }) => {
     }
     authenticateUser();
   }, [navigate]);
-
+  // #####################################
+  useEffect(() => {
+    socket.on('uploadPhotoMessage', (data) => {
+      //👇🏻 Displays the server's response
+      toast.success(data);
+      navigate('/photos');
+    });
+  }, [socket, navigate]);
   return (
     <main className="uploadContainer">
       <div className="uploadText">
         <h2>Upload Image</h2>
         <form method="POST" onSubmit={handleSubmit}>
-          <label>Paste the image URL</label>
+          <label htmlFor="imageUrl">Paste the image URL</label>
           <input
+            id="imageUrl"
             type="text"
             name="fileImage"
             value={photoURL}
