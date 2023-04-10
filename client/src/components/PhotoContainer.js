@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { MdOutlineArrowUpward } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
 const PhotoContainer = ({ photos, socket }) => {
   const handleUpvote = (id) => {
@@ -8,6 +9,17 @@ const PhotoContainer = ({ photos, socket }) => {
       photoID: id,
     });
   };
+
+  useEffect(() => {
+    socket.on('upvoteSuccess', (data) => {
+      toast.success(data.message);
+      //👇🏻 logs the email of the user who owns the image.
+      console.log(data.item[0]._ref);
+    });
+    socket.on('upvoteError', (data) => {
+      toast.error(data.error_message);
+    });
+  }, [socket]);
 
   return (
     <main className="photoContainer">
