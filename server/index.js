@@ -90,6 +90,21 @@ socketIO.on('connection', (socket) => {
       socket.emit("uploadPhotoMessage", "Upload Successful!");
     });
     
+    socket.on("allPhotos", (data) => {
+      //👇🏻 an array to contain all the images
+      let images = [];
+      //👇🏻 loop through the items in the database
+      for (let i = 0; i < database.length; i++) {
+        //👇🏻 collect the images into the array
+        images = images.concat(database[i]?.images);
+      }
+      //👇🏻 sends all the images through another event
+      socket.emit("allPhotosMessage", {
+        message: "Photos retrieved successfully",
+        photos: images,
+      });
+    });
+    
     socket.on('disconnect', () => {
       socket.disconnect()
       console.log('🔥: A user disconnected');
