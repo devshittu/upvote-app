@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { MdOutlineArrowUpward } from 'react-icons/md';
+import emailjs from '@emailjs/browser';
 import { toast } from 'react-toastify';
 
 const PhotoContainer = ({ photos, socket }) => {
@@ -10,11 +11,35 @@ const PhotoContainer = ({ photos, socket }) => {
     });
   };
 
+  //👇🏻 The function sends email to the user - (to_email key)
+  const sendEmail = (email) => {
+    emailjs
+      .send(
+        'YOUR_SERVICE_ID',
+        'YOUR_TEMPLATE_ID',
+        {
+          to_email: email,
+          from_email: localStorage.getItem('_myEmail'),
+        },
+        'YOUR_PUBLIC_KEY',
+      )
+      .then(
+        (result) => {
+          console.log(result.text);
+        },
+        (error) => {
+          console.log(error.text);
+        },
+      );
+  };
+
   useEffect(() => {
     socket.on('upvoteSuccess', (data) => {
       toast.success(data.message);
       //👇🏻 logs the email of the user who owns the image.
       console.log(data.item[0]._ref);
+      //👇🏻 Pass the image owner email into the function
+      sendEmail(data.item[0]._ref);
     });
     socket.on('upvoteError', (data) => {
       toast.error(data.error_message);
