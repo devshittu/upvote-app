@@ -111,6 +111,13 @@ socketIO.on("connection", (socket) => {
     });
   });
 
+  socket.on("sharePhoto", (name) => {
+    //👇🏻 Filters the database via the username
+    let result = database.filter((db) => db.username === name);
+    //👇🏻 Returns the images via another event
+    socket.emit("sharePhotoMessage", result[0]?.images);
+  });
+
   socket.on("disconnect", () => {
     socket.disconnect();
     console.log("🔥: A user disconnected");
