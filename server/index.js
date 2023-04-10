@@ -70,6 +70,26 @@ socketIO.on('connection', (socket) => {
             },
         });
     })
+
+    socket.on("uploadPhoto", (data) => {
+      //👇🏻 Gets the id, email, and image URL
+      const { id, email, photoURL } = data;
+      //👇🏻 Search the database for the user
+      let result = database.filter((user) => user.id === id);
+      //👇🏻 creates the data structure for the image
+      const newImage = {
+        id: generateID(),
+        image_url: photoURL,
+        vote_count: 0,
+        votedUsers: [],
+        _ref: email,
+      };
+      //👇🏻 adds the new image to the images array
+      result[0]?.images.unshift(newImage);
+      //👇🏻 sends a new event containing the server response
+      socket.emit("uploadPhotoMessage", "Upload Successful!");
+    });
+    
     socket.on('disconnect', () => {
       socket.disconnect()
       console.log('🔥: A user disconnected');
