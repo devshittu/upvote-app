@@ -17,6 +17,7 @@ const Login = ({ socket }) => {
       setUsername('');
     }
   };
+
   useEffect(() => {
     socket.on('loginSuccess', (data) => {
       toast.success(data.message);
@@ -31,6 +32,7 @@ const Login = ({ socket }) => {
       toast.error(error);
     });
   }, [socket, navigate]);
+  
   return (
     <div className="login">
       <h2 style={{ marginBottom: '30px' }}>Login</h2>

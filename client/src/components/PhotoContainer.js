@@ -56,7 +56,7 @@ const PhotoContainer = ({ photos, socket }) => {
 
   return (
     <main className="photoContainer">
-      {photos.map((photo) => (
+      {photos?.map((photo) => (
         <div className="photo" key={photo.id}>
           <div className="imageContainer">
             <img

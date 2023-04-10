@@ -7,18 +7,13 @@ const cors = require("cors");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  next();
-});
-
+app.use(cors());
 const socketIO = require("socket.io")(http, {
   cors: {
     origin: "http://localhost:3000",
+    // origin: "*",
   },
 });
-
 //👇🏻 Add this before the app.get() block
 socketIO.on("connection", (socket) => {
   console.log(`⚡: ${socket.id} user just connected!`);
@@ -52,6 +47,7 @@ socketIO.on("connection", (socket) => {
   socket.on("login", (data) => {
     //👇🏻 Destructures the credentials from the object
     const { username, password } = data;
+    console.log("data: " + data);
 
     //👇🏻 Filters the array for existing objects with the same email and password
 
@@ -179,11 +175,12 @@ socketIO.on("connection", (socket) => {
 });
 
 app.get("/api", (req, res) => {
+  // console.log("requestBody://", req);
   res.json({
     message: "Hello world",
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server listening on ${PORT}`);
+http.listen(PORT, () => {
+  console.log(`Server listening on *:${PORT}`);
 });
