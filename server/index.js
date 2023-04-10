@@ -118,6 +118,55 @@ socketIO.on("connection", (socket) => {
     socket.emit("sharePhotoMessage", result[0]?.images);
   });
 
+  socket.on("photoUpvote", (data) => {
+    const { userID, photoID } = data;
+    let images = [];
+    //👇🏻 saves all the images not belonging to the user into the images array
+    for (let i = 0; i < database.length; i++) {
+        //👇🏻 ensures that only other users' images are separated into the images array
+        if (!(database[i].id === userID)) {
+            images = images.concat(database[i]?.images);
+        }
+    }
+    //👇🏻 Filter the images array for the image selected for upvote
+    const item = images.filter((image) => image.id === photoID);
+    /*
+    👇🏻 Returns this error if the selected image doesn't belong to other users
+    */
+    if (item.length < 1) {
+        return socket.emit("upvoteError", {
+            error_message: "You cannot upvote your photos",
+        });
+    }
+    //👇🏻 Gets the list of voted users from the selected image
+    const voters = item[0]?.votedUsers;
+    //👇🏻 Checks if the user has not upvoted the image before
+    const authenticateUpvote = voters.filter((voter) => voter === userID);
+    //👇🏻 If true (the first time the user is upvoting the image)
+    if (!authenticateUpvote.length) {
+        //👇🏻 increases the vote count
+        item[0].vote_count += 1;
+        //👇🏻 adds the user ID to the list of voters
+        voters.push(userID);
+        //👇🏻 triggers this event to reflect the change in vote count
+        socket.emit("allPhotosMessage", {
+            message: "Photos retrieved successfully",
+            photos: images,
+        });
+        //👇🏻 Returns the upvote response
+        return socket.emit("upvoteSuccess", {
+            message: "Upvote successful",
+            item,
+        });
+    }
+    /*
+    👇🏻 nullifies duplicate votes. (if the user ID already exists in the array of voted users)
+    */
+    socket.emit("upvoteError", {
+        error_message: "Duplicate votes are not allowed",
+    });
+});
+
   socket.on("disconnect", () => {
     socket.disconnect();
     console.log("🔥: A user disconnected");
