@@ -23,16 +23,25 @@ const MyPhotos = ({ socket }) => {
 
   useEffect(() => {
     function authenticateUser() {
-      const id = localStorage.getItem('_id');
-      /*
-        👇🏻 If ID is false, redirects the user to the login page
-        */
-      if (!id) {
-        navigate('/');
-      }
+       const id = localStorage.getItem('_id');
+       if (!id) {
+         navigate('/');
+       } else {
+         //👇🏻 sends the user id to the server
+         socket.emit('getMyPhotos', id);
+       }
     }
     authenticateUser();
-  }, [navigate]);
+  }, [navigate, socket]);
+
+  useEffect(() => {
+    socket.on('getMyPhotosMessage', (data) => {
+      //👇🏻 sets the user's images
+      setPhotos(data.data);
+      //👇🏻 sets the user's profile link
+      setUserLink(`http://localhost:3000/share/${data.username}`);
+    });
+  }, [socket]);
   return (
     <div>
       <nav className="navbar">
