@@ -36,6 +36,10 @@ const Home = ({ socket }) => {
   useEffect(() => {
     //👇🏻 search can be anything
     socket.emit('allPhotos', 'search');
+    //👇🏻 retrieve all the images from the server
+    socket.on('allPhotosMessage', (data) => {
+      setPhotos(data.photos);
+    });
   }, [socket]);
 
   return (
