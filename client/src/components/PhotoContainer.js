@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { MdOutlineArrowUpward } from 'react-icons/md';
 import emailjs from '@emailjs/browser';
 import { toast } from 'react-toastify';
+import { EMAILJS_PUBLIC_KEY, EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID } from '../common/constants';
+
 
 const PhotoContainer = ({ photos, socket }) => {
   const handleUpvote = (id) => {
@@ -13,15 +15,21 @@ const PhotoContainer = ({ photos, socket }) => {
 
   //👇🏻 The function sends email to the user - (to_email key)
   const sendEmail = (email) => {
+    emailjs.send('service_id_mshittu', 'template_27y8asf', {
+      from_name: 'Shittu',
+      to_name: 'Abiodun',
+      message: 'I am just testing this out.',
+      reply_to: 'no-reply@gmail.com',
+    });
     emailjs
       .send(
-        'YOUR_SERVICE_ID',
-        'YOUR_TEMPLATE_ID',
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
         {
           to_email: email,
           from_email: localStorage.getItem('_myEmail'),
         },
-        'YOUR_PUBLIC_KEY',
+        EMAILJS_PUBLIC_KEY,
       )
       .then(
         (result) => {
